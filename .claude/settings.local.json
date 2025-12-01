@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Laravel forum application\n\nFeatures:\n- User authentication and registration\n- Forum with categories, topics, and posts\n- Private messaging system\n- File uploads with security scanning\n- hCaptcha integration for spam protection\n- StopForumSpam API integration\n- User profiles and bookmarks\n- Search functionality\n- Moderation tools\n- SEO optimization with sitemaps\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
