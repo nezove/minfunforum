@@ -1,182 +1,177 @@
-# Forum Application
+# Минималистичный функциональный форум
 
-Laravel-based forum application with advanced security features and user management.
+Форум на базе Laravel с расширенными функциями безопасности и управления пользователями.
 ![DEMO](https://i.ibb.co/WWkbqVhy/localhost-8888.png)
-## Features
 
-- User registration and authentication
-- Topic and post management
-- File uploads with security scanning
-- hCaptcha integration for spam protection
-- StopForumSpam API integration
-- Time-limited post editing
-- Customizable file upload restrictions
-- SVG upload protection
+## Возможности
 
-## Requirements
+- Регистрация и аутентификация пользователей
+- Управление темами и сообщениями
+- Загрузка файлов со сканированием безопасности
+- Интеграция hCaptcha для защиты от спама
+- Интеграция API StopForumSpam
+- Ограниченное по времени редактирование сообщений
+- Настраиваемые ограничения загрузки файлов
+- Защита от загрузки SVG
 
-- PHP 8.1 or higher
+## Требования
+
+- PHP 8.1 или выше
 - Composer
-- MySQL 5.7+ or MariaDB 10.3+
-- Node.js 16+ and NPM
-- Web server (Apache/Nginx)
+- MySQL 5.7+ или MariaDB 10.3+
+- Node.js 16+ и NPM
+- Веб-сервер (Apache/Nginx)
 
-## Installation
+## Установка
 
-### 1. Clone the repository
-
+### 1. Клонируйте репозиторий
 ```bash
 git clone https://github.com/yourusername/your-repo-name.git
 cd your-repo-name
 ```
 
-### 2. Install PHP dependencies
-
+### 2. Установите Composer и PHP зависимости
 ```bash
-composer install
+# Установите Composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+
+# Запустите установку зависимостей
+php composer.phar install
 ```
 
-### 3. Install Node.js dependencies
-
+### 3. Установите Node.js зависимости
 ```bash
 npm install
 ```
 
-### 4. Environment configuration
-
+### 4. Настройка окружения
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` file and configure the following:
+Отредактируйте файл `.env` и настройте следующее:
 
-#### Database settings
+#### Настройки базы данных
 ```
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=your_database_name
-DB_USERNAME=your_database_user
-DB_PASSWORD=your_database_password
+DB_DATABASE=имя_вашей_базы_данных
+DB_USERNAME=пользователь_базы_данных
+DB_PASSWORD=пароль_базы_данных
 ```
 
-#### Application settings
+#### Настройки приложения
 ```
-APP_NAME=YourForumName
+APP_NAME=НазваниеВашегоФорума
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://yourdomain.com
+APP_URL=https://ваш-домен.com
 ```
 
-#### hCaptcha settings
-Register at https://www.hcaptcha.com/ and get your keys:
+#### Настройки hCaptcha
+Зарегистрируйтесь на https://www.hcaptcha.com/ и получите ключи:
 ```
-HCAPTCHA_SITE_KEY=your_site_key
-HCAPTCHA_SECRET_KEY=your_secret_key
+HCAPTCHA_SITE_KEY=ваш_ключ_сайта
+HCAPTCHA_SECRET_KEY=ваш_секретный_ключ
 ```
 
-#### StopForumSpam API (optional)
-Register at https://www.stopforumspam.com/keys and get your API key:
+#### API StopForumSpam (опционально)
+Зарегистрируйтесь на https://www.stopforumspam.com/keys и получите API ключ:
 ```
-STOPFORUMSPAM_API_KEY=your_api_key
+STOPFORUMSPAM_API_KEY=ваш_api_ключ
 STOPFORUMSPAM_ENABLED=true
 ```
 
-### 5. Generate application key
-
+### 5. Сгенерируйте ключ приложения
 ```bash
 php artisan key:generate
 ```
 
-### 6. Run database migrations
-
+### 6. Выполните миграции базы данных
 ```bash
 php artisan migrate
 ```
 
-### 7. Create storage symbolic link
-
+### 7. Создайте символическую ссылку для хранилища
 ```bash
 php artisan storage:link
 ```
 
-### 8. Set proper permissions
-
+### 8. Установите правильные права доступа
 ```bash
 chmod -R 775 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 ```
 
-### 9. Build frontend assets
+### 9. Соберите фронтенд ресурсы
 
-For development:
+Для разработки:
 ```bash
 npm run dev
 ```
 
-For production:
+Для продакшена:
 ```bash
 npm run build
 ```
 
-## Configuration Options
+## Параметры конфигурации
 
-### File Upload Settings
+### Настройки загрузки файлов
 
-Configure in `.env`:
-
+Настройте в `.env`:
 ```
-# Allow file downloads (1 = everyone, 0 = registered users only)
+# Разрешить скачивание файлов (1 = всем, 0 = только зарегистрированным)
 ALLOW_FILE_DOWNLOAD=0
 
-# Edit time limits (in minutes)
-POST_EDIT_TIME_LIMIT=60       # 1 hour
-TOPIC_EDIT_TIME_LIMIT=1440    # 24 hours
+# Лимиты времени редактирования (в минутах)
+POST_EDIT_TIME_LIMIT=60       # 1 час
+TOPIC_EDIT_TIME_LIMIT=1440    # 24 часа
 
-# File upload limits
+# Лимиты загрузки файлов
 UPLOAD_MAX_FILESIZE=10M
 POST_MAX_SIZE=10M
-MAX_FILE_SIZE=7240             # in KB
+MAX_FILE_SIZE=7240             # в КБ
 MAX_IMAGE_PIXELS=16000
 
-# Allowed file types
+# Разрешенные типы файлов
 ALLOWED_FILE_EXTENSIONS="zip,rar,7z,txt,pdf,doc,docx,json,xml"
 ALLOWED_IMAGE_FORMATS="jpg,png,gif"
 
-# Security features
+# Функции безопасности
 DISABLE_SVG_UPLOAD=true
 ENABLE_FILE_SCANNING=true
 FILE_UPLOAD_QUARANTINE_ENABLED=true
 ```
 
-### Display Settings
-
+### Настройки отображения
 ```
-# Show username instead of name
+# Показывать имя пользователя вместо имени
 DISPLAY_USERNAME_INSTEAD_OF_NAME=true
 ```
 
-## Running the Application
+## Запуск приложения
 
-### Development server
-
+### Сервер разработки
 ```bash
 php artisan serve
 ```
 
-Visit http://localhost:8000
+Перейдите по адресу http://localhost:8000
 
-### Production deployment
+### Развертывание на продакшене
 
-For production, configure your web server (Apache/Nginx) to point to the `public` directory.
+Для продакшена настройте ваш веб-сервер (Apache/Nginx) так, чтобы он указывал на директорию `public`.
 
-#### Nginx example:
-
+#### Пример для Nginx:
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com;
-    root /path/to/your-app/public;
+    server_name ваш-домен.com;
+    root /путь/к/вашему-приложению/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -206,49 +201,49 @@ server {
 }
 ```
 
-## Security Considerations
+## Вопросы безопасности
 
-### Important Security Steps
+### Важные шаги по безопасности
 
-1. **Never commit `.env` file** - It contains sensitive credentials
-2. **Generate a new APP_KEY** after deployment using `php artisan key:generate`
-3. **Use strong database passwords**
-4. **Enable HTTPS** in production
-5. **Keep dependencies updated**: Run `composer update` and `npm update` regularly
-6. **Configure proper file permissions**
-7. **Enable firewall** and restrict database access
-8. **Regular backups** of database and uploaded files
+1. **Никогда не коммитьте файл `.env`** - Он содержит конфиденциальные данные
+2. **Сгенерируйте новый APP_KEY** после развертывания, используя `php artisan key:generate`
+3. **Используйте сложные пароли базы данных**
+4. **Включите HTTPS** на продакшене
+5. **Обновляйте зависимости**: Регулярно выполняйте `composer update` и `npm update`
+6. **Настройте правильные права доступа к файлам**
+7. **Включите файрвол** и ограничьте доступ к базе данных
+8. **Регулярные резервные копии** базы данных и загруженных файлов
 
-### Before Going Live
+### Перед запуском в продакшен
 
-- [ ] Set `APP_ENV=production`
-- [ ] Set `APP_DEBUG=false`
-- [ ] Configure SSL certificate
-- [ ] Set up automated backups
-- [ ] Configure email settings for notifications
-- [ ] Test hCaptcha functionality
-- [ ] Review and adjust file upload limits
-- [ ] Set up logging and monitoring
+- [ ] Установите `APP_ENV=production`
+- [ ] Установите `APP_DEBUG=false`
+- [ ] Настройте SSL сертификат
+- [ ] Настройте автоматические резервные копии
+- [ ] Настройте параметры email для уведомлений
+- [ ] Протестируйте функциональность hCaptcha
+- [ ] Проверьте и настройте лимиты загрузки файлов
+- [ ] Настройте логирование и мониторинг
 
-## Troubleshooting
+## Решение проблем
 
-### Permission errors
+### Ошибки прав доступа
 ```bash
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
 ```
 
-### Database connection issues
-Check your `.env` database credentials and ensure MySQL is running.
+### Проблемы с подключением к базе данных
+Проверьте учетные данные базы данных в `.env` и убедитесь, что MySQL запущен.
 
-### Frontend build errors
+### Ошибки сборки фронтенда
 ```bash
 rm -rf node_modules package-lock.json
 npm install
 npm run build
 ```
 
-### Cache issues
+### Проблемы с кешем
 ```bash
 php artisan cache:clear
 php artisan config:clear
@@ -256,10 +251,10 @@ php artisan view:clear
 php artisan route:clear
 ```
 
-## Support
+## Поддержка
 
-For issues and questions, please create an issue in the GitHub repository.
+По вопросам и проблемам, пожалуйста, создайте issue в GitHub репозитории.
 
-## License
+## Лицензия
 
-This project is open-sourced software licensed under the MIT license.
+Этот проект является программным обеспечением с открытым исходным кодом, лицензированным по лицензии MIT.
