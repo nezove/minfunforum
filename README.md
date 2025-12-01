@@ -1,7 +1,7 @@
 # Forum Application
 
 Laravel-based forum application with advanced security features and user management.
-![DEMO](https://raw.githubusercontent.com/nezove/minfunforum/refs/heads/main/storage/app/public/demo.png)
+![DEMO](https://raw.githubusercontent.com/nezove/minfunforum/refs/heads/main/storage/app/public/demo-site.png)
 ## Features
 
 - User registration and authentication
