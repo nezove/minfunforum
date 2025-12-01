@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreignId('banned_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('last_activity_at')->nullable();
             $table->integer('posts_count')->default(0);
+            $table->integer('topics_count')->default(0); 
             $table->rememberToken();
             $table->timestamps();
 
