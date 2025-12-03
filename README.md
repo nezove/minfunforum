@@ -26,8 +26,8 @@
 
 ### 1. Клонируйте репозиторий
 ```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/nezove/minfunforum.git
+cd minfunforum
 ```
 
 ### 2. Установите Composer и PHP зависимости
