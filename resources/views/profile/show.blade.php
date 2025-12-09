@@ -183,6 +183,8 @@
                 </div>
             </div>
             @endif
+
+            <x-footer />
         </div>
 
         <div class="col-lg-9">

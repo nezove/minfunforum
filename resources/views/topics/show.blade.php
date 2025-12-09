@@ -884,6 +884,8 @@
                 @endforeach
             </div>
         </div>
+
+        <x-footer />
     </div>
 </div>
 

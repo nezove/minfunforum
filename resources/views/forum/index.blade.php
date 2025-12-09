@@ -436,6 +436,8 @@
             </div>
         </div>
         @endif
+
+        <x-footer class="mb-4" />
     </div>
 </div>
 @endsection
