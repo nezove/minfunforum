@@ -203,6 +203,25 @@
                                         </div>
                                         @enderror
                                     </div>
+
+                                    <!-- Telegram -->
+                                    <div class="col-12 col-md-6">
+                                        <label for="telegram" class="form-label fw-semibold">
+                                            <i class="bi bi-telegram me-1"></i>Telegram
+                                        </label>
+                                        <input id="telegram" type="text"
+                                            class="form-control @error('telegram') is-invalid @enderror" name="telegram"
+                                            value="{{ old('telegram', auth()->user()->telegram) }}"
+                                            placeholder="@nickname или t.me/nickname">
+                                        @error('telegram')
+                                        <div class="invalid-feedback">
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                                        </div>
+                                        @enderror
+                                        <div class="form-text">
+                                            <small class="text-muted">Форматы: nick, @nick, t.me/nick</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -410,6 +429,64 @@
                                                 <i class="bi bi-eye" id="password_confirmation_icon"></i>
                                             </button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Settings Card -->
+                        <div class="card shadow-sm border-0 mt-4">
+                            <div class="card-header bg-white border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-lock text-primary me-2"></i>
+                                    <h5 class="mb-0 fw-semibold">Настройки приватности</h5>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <!-- Публикации на стене -->
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox"
+                                                   id="allow_wall_posts" name="allow_wall_posts"
+                                                   value="1" {{ old('allow_wall_posts', auth()->user()->allow_wall_posts) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-semibold" for="allow_wall_posts">
+                                                <i class="bi bi-journal-text me-1"></i>Разрешить публикации на моей стене
+                                            </label>
+                                        </div>
+                                        <small class="text-muted d-block mt-1 ms-4">
+                                            Другие пользователи смогут оставлять записи на вашей стене
+                                        </small>
+                                    </div>
+
+                                    <!-- Личные сообщения -->
+                                    <div class="col-12 mt-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox"
+                                                   id="allow_messages" name="allow_messages"
+                                                   value="1" {{ old('allow_messages', auth()->user()->allow_messages) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-semibold" for="allow_messages">
+                                                <i class="bi bi-chat-dots me-1"></i>Разрешить отправлять мне личные сообщения
+                                            </label>
+                                        </div>
+                                        <small class="text-muted d-block mt-1 ms-4">
+                                            Другие пользователи смогут отправлять вам личные сообщения
+                                        </small>
+                                    </div>
+
+                                    <!-- Индексация поисковиками -->
+                                    <div class="col-12 mt-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox"
+                                                   id="allow_search_indexing" name="allow_search_indexing"
+                                                   value="1" {{ old('allow_search_indexing', auth()->user()->allow_search_indexing) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-semibold" for="allow_search_indexing">
+                                                <i class="bi bi-search me-1"></i>Разрешить индексацию профиля поисковыми системами
+                                            </label>
+                                        </div>
+                                        <small class="text-muted d-block mt-1 ms-4">
+                                            Ваш профиль будет доступен в результатах поиска Google, Yandex и других поисковых систем
+                                        </small>
                                     </div>
                                 </div>
                             </div>

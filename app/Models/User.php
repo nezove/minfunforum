@@ -23,6 +23,7 @@ class User extends Authenticatable
         'username',
         'name',
         'email',
+        'telegram',
         'password',
         'avatar',
         'bio',
@@ -34,6 +35,9 @@ class User extends Authenticatable
         'banned_until',
         'ban_reason',
         'banned_by',
+        'allow_wall_posts',
+        'allow_messages',
+        'allow_search_indexing',
     ];
 
     protected $hidden = [
@@ -193,6 +197,21 @@ class User extends Authenticatable
     public function topics()
     {
         return $this->hasMany(Topic::class);
+    }
+
+    public function wallPosts()
+    {
+        return $this->hasMany(WallPost::class, 'wall_owner_id');
+    }
+
+    public function wallPostsCreated()
+    {
+        return $this->hasMany(WallPost::class, 'user_id');
+    }
+
+    public function wallComments()
+    {
+        return $this->hasMany(WallComment::class);
     }
 
     public function posts()

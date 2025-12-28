@@ -153,7 +153,7 @@
             </div>
 
             <!-- Дополнительная информация -->
-            @if($user->bio || $user->location || $user->website)
+            @if($user->bio || $user->location || $user->website || $user->telegram)
             <div class="card mt-3">
                 <div class="card-header">
                     <h6 class="mb-0">О пользователе</h6>
@@ -177,6 +177,15 @@
                         <i class="bi bi-link-45deg text-muted me-2"></i>
                         <a href="{{ $user->website }}" target="_blank" rel="noopener">
                             {{ $user->website }}
+                        </a>
+                    </div>
+                    @endif
+
+                    @if($user->telegram)
+                    <div class="mb-2">
+                        <i class="bi bi-telegram text-primary me-2"></i>
+                        <a href="https://t.me/{{ $user->telegram }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            {{ '@' . $user->telegram }}
                         </a>
                     </div>
                     @endif
@@ -241,7 +250,12 @@
             <!-- Навигационные табы -->
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#topics-tab" type="button">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#wall-tab" type="button">
+                        <i class="bi bi-journal-text me-1"></i>Стена ({{ $wallPosts->total() }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#topics-tab" type="button">
                         <i class="bi bi-chat-square-text me-1"></i>Темы ({{ $user->topics->count() }})
                     </button>
                 </li>
@@ -261,8 +275,13 @@
 
             <!-- Содержимое табов -->
             <div class="tab-content">
+                <!-- Стена -->
+                <div class="tab-pane fade show active" id="wall-tab">
+                    @include('profile.partials.wall', ['user' => $user, 'wallPosts' => $wallPosts])
+                </div>
+
                 <!-- Темы пользователя -->
-                <div class="tab-pane fade show active" id="topics-tab">
+                <div class="tab-pane fade" id="topics-tab">
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">Темы пользователя</h6>

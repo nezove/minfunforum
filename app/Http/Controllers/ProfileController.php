@@ -24,11 +24,22 @@ class ProfileController extends Controller
         $user = User::with([
             'topics' => function($query) {
                 $query->latest()->limit(10);
-            }, 
+            },
             'posts' => function($query) {
                 $query->with(['topic.category'])->latest()->limit(10);
             }
         ])->findOrFail($id);
+
+        // Загружаем записи стены БЕЗ комментариев (для производительности)
+        // Комментарии будут загружаться по запросу через AJAX
+        $wallPosts = $user->wallPosts()
+            ->withCount('comments')
+            ->with([
+                'user',
+                'likes'
+            ])
+            ->latest()
+            ->paginate(20);
 
         // Загружаем понравившиеся посты
         $likedPosts = $user->belongsToMany(Post::class, 'likes', 'user_id', 'likeable_id')
@@ -66,11 +77,12 @@ class ProfileController extends Controller
         ]);
 
         return view('profile.show', compact(
-            'user', 
+            'user',
+            'wallPosts',
             'likedPosts',
             'likedTopics',
-            'seoTitle', 
-            'seoDescription', 
+            'seoTitle',
+            'seoDescription',
             'seoKeywords'
         ));
     }
@@ -99,6 +111,7 @@ class ProfileController extends Controller
             'bio' => ['nullable', 'string', 'max:1000'],
             'location' => ['nullable', 'string', 'max:255', 'regex:/^[\pL\pN\s\-\.\,\']+$/u'],
             'website' => ['nullable', 'url', 'max:255', 'regex:/^https?:\/\/.+/'],
+            'telegram' => ['nullable', 'string', 'max:32', 'regex:/^[a-zA-Z0-9_]+$/'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'], // 5MB max
         ];
 
@@ -150,6 +163,41 @@ class ProfileController extends Controller
 
         if (isset($validatedData['location'])) {
             $validatedData['location'] = strip_tags($validatedData['location']);
+        }
+
+        // Обработка Telegram никнейма
+        if ($request->filled('telegram')) {
+            $telegram = trim($request->telegram);
+
+            // Извлекаем только никнейм из различных форматов
+            $username = null;
+
+            // Проверяем разные форматы URL
+            if (preg_match('/(?:https?:\/\/)?(?:www\.)?t\.me\/([a-zA-Z0-9_]{5,32})(?:\/|$)/', $telegram, $matches)) {
+                $username = $matches[1];
+            } elseif (preg_match('/(?:https?:\/\/)?(?:www\.)?telegram\.(?:org|me)\/([a-zA-Z0-9_]{5,32})(?:\/|$)/', $telegram, $matches)) {
+                $username = $matches[1];
+            } elseif (preg_match('/^@([a-zA-Z0-9_]{5,32})$/', $telegram, $matches)) {
+                // Формат @username
+                $username = $matches[1];
+            } elseif (preg_match('/^([a-zA-Z0-9_]{5,32})$/', $telegram, $matches)) {
+                // Просто username
+                $username = $matches[1];
+            }
+
+            if ($username) {
+                $validatedData['telegram'] = $username;
+            } else {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Некорректный Telegram. Формат: username, @username, t.me/username или https://t.me/username'
+                    ], 422);
+                }
+                return back()->withErrors(['telegram' => 'Некорректный Telegram. Используйте username (5-32 символа, только латиница, цифры и _)']);
+            }
+        } else {
+            $validatedData['telegram'] = null;
         }
 
         // Обработка загрузки аватара
@@ -232,6 +280,11 @@ class ProfileController extends Controller
         if (!$request->filled('current_password')) {
             unset($validatedData['password']);
         }
+
+        // Обработка настроек приватности
+        $validatedData['allow_wall_posts'] = $request->has('allow_wall_posts') ? true : false;
+        $validatedData['allow_messages'] = $request->has('allow_messages') ? true : false;
+        $validatedData['allow_search_indexing'] = $request->has('allow_search_indexing') ? true : false;
 
         try {
             $user->update($validatedData);

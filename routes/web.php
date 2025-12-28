@@ -12,6 +12,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\WallPostController;
 
 // Применяем антиспам middleware только к странице регистрации
 Route::middleware(['antispam'])->group(function () {
@@ -126,6 +127,20 @@ Route::middleware('auth')->group(function () {
 
 // ЗАЩИЩЁННЫЕ МАРШРУТЫ - требуют авторизации И проверки на бан
 Route::middleware(['auth', 'check.banned'])->group(function () {
+    // Стена пользователя
+    Route::post('/user/{userId}/wall', [WallPostController::class, 'store'])->name('wall.store');
+    Route::get('/user/{userId}/wall/load-more', [WallPostController::class, 'loadMore'])->name('wall.load-more');
+    Route::put('/wall/{id}', [WallPostController::class, 'update'])->name('wall.update');
+    Route::delete('/wall/{id}', [WallPostController::class, 'destroy'])->name('wall.destroy');
+    Route::post('/wall/{wallPostId}/like', [WallPostController::class, 'like'])->name('wall.like');
+
+    // Комментарии к записям на стене
+    Route::get('/wall/{wallPostId}/comments', [WallPostController::class, 'loadComments'])->name('wall.comments.load');
+    Route::post('/wall/{wallPostId}/comments', [WallPostController::class, 'storeComment'])->name('wall.comments.store');
+    Route::put('/wall/comments/{commentId}', [WallPostController::class, 'updateComment'])->name('wall.comments.update');
+    Route::delete('/wall/comments/{commentId}', [WallPostController::class, 'destroyComment'])->name('wall.comments.destroy');
+    Route::post('/wall/comments/{commentId}/like', [WallPostController::class, 'likeComment'])->name('wall.comments.like');
+
 // Загрузка изображений галереи во временную папку
 Route::post('/gallery/upload', [ImageController::class, 'uploadGalleryImage'])
     ->name('gallery.upload')

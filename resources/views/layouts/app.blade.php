@@ -18,6 +18,11 @@
     <title>{{ $seoTitle ?? config('app.name') }}</title>
     <meta name="description" content="{{ $seoDescription ?? 'Форум разработчиков и IT-специалистов' }}">
     <meta name="keywords" content="{{ $seoKeywords ?? 'форум, разработка, программирование' }}">
+
+    @if(isset($user) && !$user->allow_search_indexing)
+    <meta name="robots" content="noindex, nofollow">
+    @endif
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link

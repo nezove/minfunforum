@@ -21,6 +21,8 @@ class NotificationSettings extends Model
         'notify_post_deleted',
         'notify_topic_moved',
         'notify_bans',
+        'notify_wall_post',
+        'notify_wall_comment',
     ];
 
     protected $casts = [
@@ -34,6 +36,8 @@ class NotificationSettings extends Model
         'notify_post_deleted' => 'boolean',
         'notify_topic_moved' => 'boolean',
         'notify_bans' => 'boolean',
+        'notify_wall_post' => 'boolean',
+        'notify_wall_comment' => 'boolean',
     ];
 
     /**
@@ -62,6 +66,8 @@ class NotificationSettings extends Model
                 'notify_post_deleted' => true,
                 'notify_topic_moved' => true,
                 'notify_bans' => true,
+                'notify_wall_post' => true,
+                'notify_wall_comment' => true,
             ]
         );
     }

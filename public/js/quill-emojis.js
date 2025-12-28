@@ -189,24 +189,27 @@ class QuillEmojis {
         const range = this.currentEditor.getSelection(true);
         const index = range ? range.index : this.currentEditor.getLength();
 
-        // Вставляем изображение
+        // Вставляем изображение напрямую
         this.currentEditor.insertEmbed(index, 'image', emoji.url, 'user');
 
         // Добавляем класс и атрибуты
-        setTimeout(() => {
+        const applyStyles = () => {
             const imgs = this.currentEditor.root.querySelectorAll('img[src="' + emoji.url + '"]');
             if (imgs.length > 0) {
                 const img = imgs[imgs.length - 1];
                 img.className = 'custom-emoji';
                 img.width = emoji.width || 24;
                 img.height = emoji.height || 24;
-                img.style.width = (emoji.width || 24) + 'px';
-                img.style.height = (emoji.height || 24) + 'px';
-                img.style.verticalAlign = 'middle';
-                img.style.display = 'inline';
+                img.setAttribute('width', emoji.width || 24);
+                img.setAttribute('height', emoji.height || 24);
+                img.style.cssText = 'width: 24px !important; height: 24px !important; display: inline !important; vertical-align: middle; margin: 0 2px;';
                 img.dataset.emojiId = emoji.id;
             }
-        }, 10);
+        };
+
+        applyStyles();
+        setTimeout(applyStyles, 10);
+        setTimeout(applyStyles, 100);
 
         // Перемещаем курсор
         this.currentEditor.setSelection(index + 1, 0);

@@ -111,6 +111,31 @@
                             </div>
                         </div>
 
+                        <!-- Уведомления стены -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-journal-text text-success me-2"></i>Стена профиля
+                            </h6>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="notify_wall_post"
+                                       name="notify_wall_post" {{ $settings->notify_wall_post ? 'checked' : '' }}>
+                                <label class="form-check-label" for="notify_wall_post">
+                                    <strong>Запись на моей стене</strong>
+                                    <div class="text-muted small">Уведомлять когда кто-то публикует запись на моей стене</div>
+                                </label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="notify_wall_comment"
+                                       name="notify_wall_comment" {{ $settings->notify_wall_comment ? 'checked' : '' }}>
+                                <label class="form-check-label" for="notify_wall_comment">
+                                    <strong>Комментарий к моему посту на стене</strong>
+                                    <div class="text-muted small">Уведомлять когда кто-то комментирует мой пост на стене</div>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-lg me-2"></i>Сохранить настройки
