@@ -165,6 +165,7 @@ Route::delete('/files/delete-temp', [TopicController::class, 'deleteTempFile'])-
     Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
     Route::post('/topics', [TopicController::class, 'store'])->name('topics.store');
     Route::post('/topics/upload-image', [TopicController::class, 'uploadImage'])->name('topics.upload-image');
+    Route::post('/topics/mark-all-as-read', [TopicController::class, 'markAllAsRead'])->name('topics.markAllAsRead');
     // API для получения тегов (AJAX)
 Route::get('/api/categories/{category}/tags', [App\Http\Controllers\TagController::class, 'getTagsByCategory'])->name('api.tags.by-category');
 

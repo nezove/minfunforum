@@ -339,7 +339,7 @@ class WallPostController extends Controller
     protected function createWallPostNotification($wallPost, $wallOwner)
     {
         $settings = $wallOwner->notificationSettings;
-        if (!$settings || !$settings->notify_wall_post ?? true) {
+        if ($settings && !$settings->notify_wall_post) {
             return;
         }
 
@@ -366,7 +366,7 @@ class WallPostController extends Controller
     protected function createCommentNotification($comment, $wallPost)
     {
         $settings = $wallPost->user->notificationSettings;
-        if (!$settings || !$settings->notify_wall_comment ?? true) {
+        if ($settings && !$settings->notify_wall_comment) {
             return;
         }
 
@@ -393,7 +393,7 @@ class WallPostController extends Controller
     protected function createLikeNotification($wallPost, $liker)
     {
         $settings = $wallPost->user->notificationSettings;
-        if (!$settings || !$settings->notify_like_post ?? true) {
+        if ($settings && !$settings->notify_like_post) {
             return;
         }
 
@@ -413,7 +413,7 @@ class WallPostController extends Controller
     protected function createCommentLikeNotification($comment, $liker)
     {
         $settings = $comment->user->notificationSettings;
-        if (!$settings || !$settings->notify_like_post ?? true) {
+        if ($settings && !$settings->notify_like_post) {
             return;
         }
 
@@ -459,7 +459,7 @@ class WallPostController extends Controller
     protected function createReplyNotification($reply, $parentComment)
     {
         $settings = $parentComment->user->notificationSettings;
-        if (!$settings || !$settings->notify_wall_comment ?? true) {
+        if ($settings && !$settings->notify_wall_comment) {
             return;
         }
 
@@ -496,7 +496,7 @@ class WallPostController extends Controller
 
                 if ($mentionedUser && $mentionedUser->id !== $author->id) {
                     $settings = $mentionedUser->notificationSettings;
-                    if (!$settings || $settings->notify_mention ?? true) {
+                    if (!$settings || $settings->notify_mention) {
                         Notification::createOrUpdate([
                             'user_id' => $mentionedUser->id,
                             'from_user_id' => $author->id,
@@ -526,7 +526,7 @@ class WallPostController extends Controller
 
                 if ($mentionedUser && $mentionedUser->id !== $author->id) {
                     $settings = $mentionedUser->notificationSettings;
-                    if (!$settings || $settings->notify_mention ?? true) {
+                    if (!$settings || $settings->notify_mention) {
                         Notification::createOrUpdate([
                             'user_id' => $mentionedUser->id,
                             'from_user_id' => $author->id,
@@ -554,7 +554,7 @@ class WallPostController extends Controller
                 'id' => $wallPost->user->id,
                 'username' => $wallPost->user->username,
                 'name' => $wallPost->user->name,
-                'avatar' => $wallPost->user->avatar,
+                'avatar_url' => $wallPost->user->avatar_url,
             ],
             'likes_count' => $wallPost->likes->count(),
             'is_liked' => $wallPost->likes->where('user_id', $currentUser->id)->count() > 0,
@@ -563,6 +563,7 @@ class WallPostController extends Controller
             'created_at' => $wallPost->created_at->diffForHumans(),
             'edited_at' => $wallPost->edited_at ? $wallPost->edited_at->diffForHumans() : null,
             'edit_count' => $wallPost->edit_count,
+            'comments_count' => 0,
         ];
     }
 
@@ -576,7 +577,7 @@ class WallPostController extends Controller
                 'id' => $comment->user->id,
                 'username' => $comment->user->username,
                 'name' => $comment->user->name,
-                'avatar' => $comment->user->avatar,
+                'avatar_url' => $comment->user->avatar_url,
             ],
             'likes_count' => $comment->likes->count(),
             'is_liked' => $comment->likes->where('user_id', $currentUser->id)->count() > 0,

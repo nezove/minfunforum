@@ -93,6 +93,23 @@ class RegisterController extends Controller
         'password' => Hash::make($data['password']),
     ]);
 
+    // Создаем настройки уведомлений для нового пользователя
+    \App\Models\NotificationSettings::create([
+        'user_id' => $user->id,
+        'notify_reply' => true,
+        'notify_reply_to_post' => true,
+        'notify_mention' => true,
+        'notify_mention_topic' => true,
+        'notify_like_topic' => true,
+        'notify_like_post' => true,
+        'notify_topic_deleted' => true,
+        'notify_post_deleted' => true,
+        'notify_topic_moved' => true,
+        'notify_bans' => true,
+        'notify_wall_post' => true,
+        'notify_wall_comment' => true,
+    ]);
+
     // Логируем регистрацию
     SessionLogger::logSession($user->id, 'registration', request());
 

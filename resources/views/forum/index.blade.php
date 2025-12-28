@@ -51,14 +51,21 @@
 
 <!-- index.blade.php -->
 <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">
             <i class="bi bi-clock-history me-2"></i>Последние темы
         </h5>
+        @auth
+            @if($hasUnreadTopics ?? false)
+            <button id="markAllAsRead" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-check-all me-1"></i>Прочитать всё
+            </button>
+            @endif
+        @endauth
     </div>
     <div class="card-body p-0">
         @forelse($latestTopics as $topic)
-        <div class="d-flex align-items-start p-3 {{ !$loop->last ? 'border-bottom' : '' }} hover-bg-light">
+        <div class="d-flex align-items-start p-3 {{ !$loop->last ? 'border-bottom' : '' }} hover-bg-light @auth @if(!$topic->isReadBy(auth()->user())) bg-light-subtle @endif @endauth">
             <!-- Аватар пользователя -->
             <img src="{{ $topic->user->avatar_url ?? 'https://via.placeholder.com/40x40/6c757d/ffffff?text=' . substr($topic->user->name, 0, 1) }}"
                 alt="{{ $topic->user->username }}" class="rounded-circle me-3 flex-shrink-0" width="40"
@@ -124,7 +131,7 @@
                 <div class="small text-muted">{{ $topic->lastPost->created_at->diffForHumans() }}</div>
                 <div class="small">
                     <a href="{{ route('profile.show', $topic->lastPost->user->id) }}"
-                        class="text-decoration-none">{{ $topic->lastPost->user->name }}</a>
+                        class="text-decoration-none">{!! $topic->lastPost->user->styled_username !!}</a>
                 </div>
                 @elseif($topic->replies_count == 0)
                 <div class="small text-muted">Нет ответов</div>
@@ -132,7 +139,7 @@
                 <div class="small text-muted">{{ $topic->created_at->diffForHumans() }}</div>
                 <div class="small">
                     <a href="{{ route('profile.show', $topic->user->id) }}"
-                        class="text-decoration-none">{{ $topic->user->name }}</a>
+                        class="text-decoration-none">{!! $topic->user->styled_username !!}</a>
                 </div>
                 @endif
             </div>
@@ -440,4 +447,63 @@
         <x-footer class="mb-4" />
     </div>
 </div>
+
+@auth
+<script>
+document.getElementById('markAllAsRead')?.addEventListener('click', function() {
+    if (!confirm('Отметить все темы как прочитанные?')) {
+        return;
+    }
+
+    const button = this;
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Обработка...';
+
+    fetch('{{ route("topics.markAllAsRead") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Удаляем класс bg-light-subtle со всех непрочитанных тем
+            document.querySelectorAll('.bg-light-subtle').forEach(el => {
+                el.classList.remove('bg-light-subtle');
+            });
+
+            // Скрываем кнопку после успешного выполнения
+            button.style.display = 'none';
+
+            // Показываем toast уведомление
+            const toast = document.createElement('div');
+            toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 start-50 translate-middle-x mt-3';
+            toast.style.zIndex = '9999';
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle me-2"></i>Все темы отмечены как прочитанные
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            setTimeout(() => toast.remove(), 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = '<i class="bi bi-check-all me-1"></i>Прочитать всё';
+        button.disabled = false;
+        alert('Произошла ошибка. Попробуйте снова.');
+    });
+});
+</script>
+@endauth
+
 @endsection

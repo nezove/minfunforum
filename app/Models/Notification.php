@@ -122,6 +122,19 @@ public function getDirectLinkAttribute()
     return route('forum.index');
 }
 
+    /**
+     * Создать или обновить уведомление
+     */
+    public static function createOrUpdate(array $attributes)
+    {
+        // Проверяем, не создаём ли мы уведомление самому себе
+        if ($attributes['user_id'] == $attributes['from_user_id']) {
+            return null;
+        }
+
+        return self::create($attributes);
+    }
+
     // Статические методы для создания уведомлений
     public static function createNotification($userId, $fromUserId, $type, $data = [])
     {

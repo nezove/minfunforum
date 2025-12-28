@@ -244,6 +244,11 @@ class User extends Authenticatable
         return $this->hasOne(NotificationSettings::class);
     }
 
+    public function topicViews()
+    {
+        return $this->hasMany(TopicView::class);
+    }
+
     /**
      * Награды пользователя
      */

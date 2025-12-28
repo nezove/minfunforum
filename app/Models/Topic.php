@@ -71,6 +71,27 @@ class Topic extends Model
         return $this->hasOne(Post::class)->latest();
     }
 
+    public function views()
+    {
+        return $this->hasMany(TopicView::class);
+    }
+
+    // Проверка, прочитана ли тема пользователем
+    public function isReadBy($user)
+    {
+        if (!$user) {
+            return false;
+        }
+
+        $view = $this->views()->where('user_id', $user->id)->first();
+        if (!$view) {
+            return false;
+        }
+
+        // Тема считается прочитанной, если просмотр был после последней активности
+        return $view->viewed_at >= $this->last_activity_at;
+    }
+
     // Отношение с тегами
     public function tags()
     {

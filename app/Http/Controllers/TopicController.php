@@ -35,10 +35,23 @@ $formattedGallerySize = $this->formatBytes($galleryTotalSize);
     }
     
     $viewKey = "topic_viewed_{$id}_" . (auth()->id() ?? request()->ip());
-    
+
     if (!session()->has($viewKey)) {
         $topic->incrementViews();
         session()->put($viewKey, true);
+    }
+
+    // Отмечаем тему как прочитанную для авторизованного пользователя
+    if (auth()->check()) {
+        \App\Models\TopicView::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'topic_id' => $topic->id,
+            ],
+            [
+                'viewed_at' => now(),
+            ]
+        );
     }
 
     $posts = $topic->posts()
@@ -716,6 +729,49 @@ public function deleteTempFile(Request $request)
         ], 500);
     }
 }
+
+public function markAllAsRead()
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Необходимо войти в систему.'
+            ], 401);
+        }
+
+        try {
+            // Получаем все темы
+            $topics = Topic::all();
+
+            // Для каждой темы создаем или обновляем запись о просмотре
+            foreach ($topics as $topic) {
+                \App\Models\TopicView::updateOrCreate(
+                    [
+                        'user_id' => auth()->id(),
+                        'topic_id' => $topic->id
+                    ],
+                    [
+                        'viewed_at' => now()
+                    ]
+                );
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Все темы отмечены как прочитанные.'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Mark all as read error', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Произошла ошибка при обработке запроса.'
+            ], 500);
+        }
+    }
 
 private function processTemporaryFiles($topic)
     {

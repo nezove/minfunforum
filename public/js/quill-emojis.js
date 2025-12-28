@@ -8,23 +8,44 @@ class QuillEmojis {
         this.categories = [];
         this.isOpen = false;
         this.currentEditor = null;
-        this.loadEmojis();
+        this.isLoaded = false;
+        this.isLoading = false;
+        // НЕ загружаем эмодзи сразу - подождем первого открытия панели
     }
 
     /**
      * Загрузка смайликов с сервера
      */
     async loadEmojis() {
+        // Если уже загружены или загружаются, ничего не делаем
+        if (this.isLoaded || this.isLoading) {
+            return;
+        }
+
+        this.isLoading = true;
+
         try {
             const response = await fetch('/api/emojis/categories');
+
+            // Проверяем, что ответ успешный и имеет правильный Content-Type
+            if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) {
+                console.warn('Failed to load emojis: invalid response');
+                this.isLoading = false;
+                return;
+            }
+
             const data = await response.json();
 
             if (data.success) {
                 this.categories = data.categories;
                 this.emojis = data.categories.flatMap(cat => cat.emojis);
+                this.isLoaded = true;
             }
         } catch (error) {
-            console.error('Ошибка загрузки смайликов:', error);
+            // Тихо игнорируем ошибки загрузки эмодзи, чтобы не мешать работе страницы
+            console.debug('Emojis not loaded:', error.message);
+        } finally {
+            this.isLoading = false;
         }
     }
 
@@ -292,9 +313,14 @@ class QuillEmojis {
     /**
      * Открыть панель
      */
-    openPanel() {
+    async openPanel() {
         const panel = document.getElementById('quill-emoji-panel');
         if (!panel) return;
+
+        // Загружаем эмодзи при первом открытии
+        if (!this.isLoaded && !this.isLoading) {
+            await this.loadEmojis();
+        }
 
         // Показываем первую категорию при открытии
         if (this.categories.length > 0) {

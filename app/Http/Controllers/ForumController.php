@@ -34,6 +34,17 @@ class ForumController extends Controller
         // ИСПРАВЛЕНИЕ: Активные пользователи с правильным подсчётом и сортировкой по лайкам
         $activeUsers = $this->getActiveUsers();
 
+        // Проверяем, есть ли непрочитанные темы
+        $hasUnreadTopics = false;
+        if (auth()->check()) {
+            foreach ($latestTopics as $topic) {
+                if (!$topic->isReadBy(auth()->user())) {
+                    $hasUnreadTopics = true;
+                    break;
+                }
+            }
+        }
+
         // SEO данные
         $siteName = config('app.name', 'Forum');
         $seoTitle = SeoHelper::generateHomeTitle($siteName);
@@ -52,11 +63,12 @@ class ForumController extends Controller
         ]);
 
         return view('forum.index', compact(
-            'categories', 
+            'categories',
             'latestTopics',
             'activeUsers', // Добавляем активных пользователей
-            'seoTitle', 
-            'seoDescription', 
+            'hasUnreadTopics', // Флаг наличия непрочитанных тем
+            'seoTitle',
+            'seoDescription',
             'seoKeywords'
         ));
     }
